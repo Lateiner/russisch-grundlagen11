@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Russisch A1-A2: Präpositionen К/КО und С/СО</title>
+    <!-- Polyfill für Drag & Drop auf Touch-Geräten -->
+    <script src="https://cdn.jsdelivr.net/npm/drag-drop-touch@1.3.1/DragDropTouch.js"></script>
+    <style>
+        :root {
+            --primary-color: #3f51b5;
+            --primary-light: #757de8;
+            --success-color: #4caf50;
+            --error-color: #f44336;
+            --bg-color: #f5f5f5;
+            --card-bg: #ffffff;
+            --text-color: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1, h2, h3 {
+            color: var(--primary-color);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        /* Introduction Card */
+        .intro-card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .rule-box {
+            background-color: #e8eaf6;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
+        .ru {
+            font-weight: bold;
+            color: #000;
+        }
+
+        /* Exercise Cards */
+        .exercise-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .exercise-header {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        /* Controls */
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: flex-start;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .btn-check { background-color: var(--primary-color); color: white; }
+        .btn-check:hover { background-color: #303f9f; }
+
+        .btn-reset { background-color: #9e9e9e; color: white; }
+        .btn-reset:hover { background-color: #757575; }
+
+        .btn-solve { background-color: #ff9800; color: white; }
+        .btn-solve:hover { background-color: #f57c00; }
+
+        /* Inputs & Feedback */
+        input[type="text"] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            width: 80px;
+            text-align: center;
+        }
+
+        select {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .correct {
+            border: 2px solid var(--success-color) !important;
+            background-color: #e8f5e9 !important;
+        }
+
+        .incorrect {
+            border: 2px solid var(--error-color) !important;
+            background-color: #ffebee !important;
+        }
+
+        .feedback-text {
+            margin-left: 10px;
+            font-weight: bold;
+        }
+
+        .feedback-text.good { color: var(--success-color); }
+        .feedback-text.bad { color: var(--error-color); }
+
+        /* Drag and Drop Styles */
+        .drag-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .draggable-source {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 15px;
+            background: #f0f0f0;
+            border-radius: 5px;
+            min-height: 50px;
+            width: 100%;
+        }
+
+        .draggable-item {
+            background: white;
+            padding: 8px 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: grab;
+            user-select: none;
+        }
+
+        .drop-zones {
+            display: flex;
+            gap: 20px;
+            width: 100%;
+        }
+
+        .drop-zone {
+            flex: 1;
+            min-height: 100px;
+            border: 2px dashed #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .drop-zone h4 { margin: 0 0 10px 0; }
+        .drop-zone.hover { border-color: var(--primary-color); background-color: #e8eaf6; }
+
+        /* Radio & Checkbox layouts */
+        .mc-option {
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .question-row {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #fafafa;
+            border-radius: 4px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .drop-zones {
+                flex-direction: column;
+            }
+            .controls {
+                flex-direction: column;
+            }
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Russische Grammatik: Präpositionen К/КО und С/СО</h1>
+
+    <!-- EINFÜHRUNG -->
+    <div class="intro-card">
+        <h2>Einführung</h2>
+        <p>Im Russischen werden die Präpositionen <strong>к</strong> (zu) und <strong>с</strong> (mit/von) manchmal durch den Vokal <strong>о</strong> erweitert (zu <strong>ко</strong> und <strong>со</strong>), um die Aussprache zu erleichtern.</p>
+        
+        <div class="rule-box">
+            <h3>1. К vs. КО (mit Dativ)</h3>
+            <p>Wir verwenden <strong>КО</strong>:</p>
+            <ul>
+                <li>Wenn das Wort einsilbig ist und mit zwei Konsonanten beginnt (z.B. <span class="ru">ко мне, ко всем, ко рту</span>).</li>
+                <li>Bei bestimmten feststehenden Wörtern (z.B. <span class="ru">ко вторнику, ко второму</span>).</li>
+            </ul>
+            <p><em>Hinweis:</em> Beginnt das Wort mit zwei Konsonanten, aber der zweite ist Р oder Л, bleibt es oft bei <strong>К</strong> (z.B. <span class="ru">к врачу</span>).</p>
+        </div>
+
+        <div class="rule-box">
+            <h3>2. С vs. СО (mit Instrumental oder Genitiv)</h3>
+            <p>Wir verwenden <strong>СО</strong>:</p>
+            <ul>
+                <li>Wenn das Wort mit <strong>С, З, Ш, Ж</strong> + Konsonant beginnt (z.B. <span class="ru">со столом, со шкафом</span>).</li>
+                <li>Wenn das Wort mit <strong>В, Л, Р, М</strong> + Konsonant beginnt (z.B. <span class="ru">со мной, со вторника, со льдом</span>).</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- AUFGABE 1: Multiple Choice К/КО -->
+    <div class="exercise-card" id="task1">
+        <div class="exercise-header">
+            <h3>1. Auswahl: К oder КО?</h3>
+            <p>Wähle die richtige Präposition für das folgende Wort.</p>
+        </div>
+        <div class="question-row" data-answer="к">
+            <span class="ru">... врачу</span><br>
+            <label><input type="radio" name="t1_q1" value="к"> к</label>
+            <label><input type="radio" name="t1_q1" value="ко"> ко</label>
+        </div>
+        <div class="question-row" data-answer="ко">
+            <span class="ru">... мне</span><br>
+            <label><input type="radio" name="t1_q2" value="к"> к</label>
+            <label><input type="radio" name="t1_q2" value="ко"> ко</label>
+        </div>
+        <div class="question-row" data-answer="к">
+            <span class="ru">... брату</span><br>
+            <label><input type="radio" name="t1_q3" value="к"> к</label>
+            <label><input type="radio" name="t1_q3" value="ко"> ко</label>
+        </div>
+        
+        <div class="controls">
+            <button class="btn-check" onclick="checkRadioTask('task1')">Überprüfen</button>
+            <button class="btn-reset" onclick="resetRadioTask('task1')">Zurücksetzen</button>
+            <button class="btn-solve" onclick="solveRadioTask('task1')">Lösung anzeigen</button>
+        </div>
+    </div>
+
+    <!-- AUFGABE 2: Multiple Choice С/СО -->
+    <div class="exercise-card" id="task2">
+        <div class="exercise-header">
+            <h3>2. Auswahl: С oder СО?</h3>
+            <p>Wähle die richtige Präposition.</p>
+        </div>
+        <div class="question-row" data-answer="со">
+            <span class="ru">... столом</span><br>
+            <label><input type="radio" name="t2_q1" value="с"> с</label>
+            <label><input type="radio" name="t2_q1" value="со"> со</label>
+        </div>
+        <div class="question-row" data-answer="с">
+            <span class="ru">... другом</span><br>
+            <label><input type="radio" name="t2_q2" value="с"> с</label>
+            <label><input type="radio" name="t2_q2" value="со"> со</label>
+        </div>
+        <div class="question-row" data-answer="со">
+            <span class="ru">... шкафом</span><br>
+            <label><input type="radio" name="t2_q3" value="с"> с</label>
+            <label><input type="radio" name="t2_q3" value="со"> со</label>
+        </div>
+
+        <div class="controls">
+            <button class="btn-check" onclick="checkRadioTask('task2')">Überprüfen</button>
+            <button class="btn-reset" onclick="resetRadioTask('task2')">Zurücksetzen</button>
+            <button class="btn-solve" onclick="solveRadioTask('task2')">Lösung anzeigen</button>
+        </div>
+    </div>
+
+    <!-- AUFGABE 3: Input Fill-in К/КО -->
+    <div class="exercise-card" id="task3">
+        <div class="exercise-header">
+            <h3>3. Schreiben: К oder КО?</h3>
+            <p>Schreibe die richtige Präposition in das Feld.</p>
+        </div>
+        <div class="question-row">
+            1. Иди <input type="text" data-answer="ко"> <span class="ru">всем</span>.
+        </div>
+        <div class="question-row">
+            2. Мы идем <input type="text" data-answer="к"> <span class="ru">врачу</span>.
+        </div>
+        <div class="question-row">
+            3. Рука <input type="text" data-answer="ко"> <span class="ru">рту</span>.
+        </div>
+        <div class="question-row">
+            4. Подготовка <input type="text" data-answer="ко"> <span class="ru">вторнику</span>.
+        </div>
+
+        <div class="controls">
+            <button class="btn-check" onclick="checkInputTask('task3')">Überprüfen</button>
+            <button class="btn-reset" onclick="resetInputTask('task3')">Zurücksetzen</button>
+            <button class="btn-solve" onclick="solveInputTask('task3')">Lösung anzeigen</button>
+        </div>
+    </div>
+
+    <!-- AUFGABE 4: Input Fill-in С/СО -->
+    <div class="exercise-card" id="task4">
+        <div class="exercise-header">
+            <h3>4. Schreiben: С oder СО?</h3>
+            <p>Ergänze die richtige Form.</p>
+        </div>
+        <div class="question-row">
+            1. Кофе <input type="text" data-answer="со"> <span class="ru">сливками</span>.
+        </div>
+        <div class="question-row">
+            2. Чай <input type="text" data-answer="с"> <span class="ru">сахаром</span>.
+        </div>
+        <div class="question-row">
+            3. Он говорил <input type="text" data-answer="со"> <span class="ru">мной</span>.
+        </div>
+        <div class="question-row">
+            4. Коктейль <input type="text" data-answer="со"> <span class="ru">льдом</span>.
+        </div>
+
+        <div class="controls">
+            <button class="btn-check" onclick="checkInputTask('task4')">Überprüfen</button>
+            <button class="btn-reset" onclick="resetInputTask('task4')">Zurücksetzen</button>
+            <button class="btn-solve" onclick="solveInputTask('task4')">Lösung anzeigen</button>
+        </div>
+    </div>
+
+    <!-- AUFGABE 5: Drag & Drop К/КО -->
+    <div class="exercise-card" id="task5">
+        <div class="exercise-header">
+            <h3>5. Ordnen: К oder КО?</h3>
+            <p>Ziehe die Wörter in die richtige Box.</p>
+        </div>
+        <div class="drag-container">
+            <div class="draggable-source" id="source5">
+                <div class="draggable-item" draggable="true" data-target="zone-k">дому</div>
+                <div class="draggable-item" draggable="true" data-target="zone-ko">мне</div>
+                <div class="draggable-item" draggable="true" data-target="zone-k">брату</div>
+                <div class="draggable-item" draggable="true" data-target="zone-ko">лбу</div>
+                <div class="draggable-item" draggable="true" data-target="zone-k">врачу</div>
+                <div class="draggable-item" draggable="true" data-target="zone-ko">второму</div>
+            </div>
+            <div class="drop-zones">
+                <div class="drop-zone" id="zone-k" data-type="k">
+                    <h4>К</h4>
+                </div>
+                <div class="drop-zone" id="zone-ko" data-type="ko">
+                    <h4>КО</h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn-check" onclick="checkDragTask('task5')">Überprüfen</button>
+            <button class="btn-reset" onclick="resetDragTask('task5')">Zurücksetzen</button>
+            <button class="btn-solve" onclick="solveDragTask('task5')">Lösung anzeigen</button>
+        </div>
+    </div>
+
+    <!-- AUFGABE 6: Drag & Drop С/СО -->
+    <div class="exercise-card" id="task6">
+        <div class="exercise-header">
+            <h3>6. Ordnen: С oder СО?</h3>
+            <p>Ziehe die Wörter in die richtige Box.</p>
+        </div>
+        <div class="drag-container">
+            <div class="draggable-source" id="source6">
+                <div class="draggable-item" draggable="true" data-target="zone-s">папой</div>
+                <div class="draggable-item" draggable="true" data-target="zone-so">шваброй</div>
+                <div class="draggable-item" draggable="true" data-target="zone-so">мной</div>
+                <div class="draggable-item" draggable="true" data-target="zone-s">лимоном</div>
+                <div class="draggable-item" draggable="true" data-target="zone-so">столом</div>
+                <div class="draggable-item" draggable="true" data-target="zone-so">льдом</div>
+            </div>
+            <div class="drop-zones">
+                <div class="drop-zone" id="zone-s" data-type="s">
+                    <h4>С</h4>
+                </div>
+                <div class="drop-zone" id="zone-so" data-type="so">
+                    <h4>СО</h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn-check" onclick="checkDragTask('task6')">Überprüfen</button>
+            <button class="btn-reset" onclick="resetDragTask('task6')">Zurücksetzen</button>
+            <button class="btn-solve" onclick="solveDragTask('task6')">Lösung anzeigen</button>
+        </div>
+    </div>
+
+    <!-- AUFGABE 7: Dropdown -->
+    <div class="exercise-card" id="task7">
+        <div class="exercise-header">
+            <h3>7. Dropdown: Sätze vervollständigen</h3>
+        </div>
+        <div class="question-row">
+            1. Я готовлюсь 
+            <select data-answer="ко">
+                <option value="">...</option>
+                <option value="к">к</option>
+                <option value="ко">ко</option>
+            </select>
+            <span class="ru">вторнику</span>.
+        </div>
+        <div class="question-row">
+            2. Она пришла 
+            <select data-answer="со">
+                <option value="">...</option>
+                <option value="с">с</option>
+                <option value="со">со</option>
+            </select>
+            <span class="ru">школы</span> (aus der Schule). <em>(Schule = школа, beginnt mit шк)</em>
+        </div>
+        <div class="question-row">
+            3. Мы идем 
+            <select data-answer="к">
+                <option value="">...</option>
+                <option value="к">к</option>
+                <option value="ко">ко</option>
+            </select>
+            <span class="ru">другу</span>.
+        </div>
+
+        <div class="controls">
+            <button class="btn-check" onclick="checkSelectTask('task7')">Überprüfen</button>
+            <button class="btn-reset" onclick="resetSelectTask('task7')">Zurücksetzen</button>
+            <button class="btn-solve" onclick="solveSelectTask('task7')">Lösung anzeigen</button>
+        </div>
+    </div>
+
+    <!-- AUFGABE 8: Wahr oder Falsch -->
+    <div class="exercise-card" id="task8">
+        <div class="exercise-header">
+            <h3>8. Richtig oder Falsch?</h3>
+            <p>Ist der Ausdruck grammatikalisch korrekt?</p>
+        </div>
+        <div class="question-row" data-answer="falsch">
+            <span class="ru">с столом</span>
+            <br>
+            <label><input type="radio" name="t8_q1" value="richtig"> Richtig</label>
+            <label><input type="radio" name="t8_q1" value="falsch"> Falsch</label>
+        </div>
+        <div class="question-row" data-answer="richtig">
+            <span class="ru">ко мне</span>
+            <br>
+            <label><input type="radio" name="t8_q2" value="richtig"> Richtig</label>
+            <label><input type="radio" name="t8_q2" value="falsch"> Falsch</label>
+        </div>
+        <div class="question-row" data-answer="falsch">
+            <span class="ru">ко врачу</span>
+            <br>
+            <label><input type="radio" name="t8_q3" value="richtig"> Richtig</label>
+            <label><input type="radio" name="t8_q3" value="falsch"> Falsch</label>
+        </div>
+
+        <div class="controls">
+            <button class="btn-check" onclick="checkRadioTask('task8')">Überprüfen</button>
+            <button class="btn-reset" onclick="resetRadioTask('task8')">Zurücksetzen</button>
+            <button class="btn-solve" onclick="solveRadioTask('task8')">Lösung anzeigen</button>
+        </div>
+    </div>
+
+    <!-- AUFGABE 9: Matching (Select) -->
+    <div class="exercise-card" id="task9">
+        <div class="exercise-header">
+            <h3>9. Paare finden</h3>
+            <p>Wähle das passende Nomen zur Präposition.</p>
+        </div>
+        <div class="question-row">
+            1. со <select data-answer="мной">
+                <option value="">...</option>
+                <option value="другом">другом</option>
+                <option value="мной">мной</option>
+                <option value="брату">брату</option>
+            </select>
+        </div>
+        <div class="question-row">
+            2. к <select data-answer="брату">
+                <option value="">...</option>
+                <option value="всем">всем</option>
+                <option value="брату">брату</option>
+                <option value="второму">второму</option>
+            </select>
+        </div>
+        <div class="question-row">
+            3. ко <select data-answer="всем">
+                <option value="">...</option>
+                <option value="дому">дому</option>
+                <option value="врачу">врачу</option>
+                <option value="всем">всем</option>
+            </select>
+        </div>
+
+        <div class="controls">
+            <button class="btn-check" onclick="checkSelectTask('task9')">Überprüfen</button>
+            <button class="btn-reset" onclick="resetSelectTask('task9')">Zurücksetzen</button>
+            <button class="btn-solve" onclick="solveSelectTask('task9')">Lösung anzeigen</button>
+        </div>
+    </div>
+
+    <!-- AUFGABE 10: Feste Ausdrücke -->
+    <div class="exercise-card" id="task10">
+        <div class="exercise-header">
+            <h3>10. Feste Ausdrücke</h3>
+            <p>Einige Wörter verlangen fast immer KO/CO. Ergänze.</p>
+        </div>
+        <div class="question-row">
+            <span class="ru">... вторнику</span> (bis Dienstag)
+            <input type="text" data-answer="ко">
+        </div>
+        <div class="question-row">
+            <span class="ru">... вторника</span> (ab Dienstag)
+            <input type="text" data-answer="со">
+        </div>
+        <div class="question-row">
+            <span class="ru">... второму</span> (zum zweiten)
+            <input type="text" data-answer="ко">
+        </div>
+
+        <div class="controls">
+            <button class="btn-check" onclick="checkInputTask('task10')">Überprüfen</button>
+            <button class="btn-reset" onclick="resetInputTask('task10')">Zurücksetzen</button>
+            <button class="btn-solve" onclick="solveInputTask('task10')">Lösung anzeigen</button>
+        </div>
+    </div>
+
+    <!-- AUFGABE 11: Gemischte Sätze -->
+    <div class="exercise-card" id="task11">
+        <div class="exercise-header">
+            <h3>11. Gemischt: К, КО, С, СО</h3>
+            <p>Alles durcheinander. Pass auf den Fall und den Wortanfang auf!</p>
+        </div>
+        <div class="question-row">
+            Он подошел <input type="text" data-answer="ко"> <span class="ru">мне</span>.
+        </div>
+        <div class="question-row">
+            Я поздравляю вас <input type="text" data-answer="с"> <span class="ru">праздником</span>!
+        </div>
+        <div class="question-row">
+            Уборщица пришла <input type="text" data-answer="со"> <span class="ru">шваброй</span>.
+        </div>
+        <div class="question-row">
+            Мы едем <input type="text" data-answer="к"> <span class="ru">бабушке</span>.
+        </div>
+
+        <div class="controls">
+            <button class="btn-check" onclick="checkInputTask('task11')">Überprüfen</button>
+            <button class="btn-reset" onclick="resetInputTask('task11')">Zurücksetzen</button>
+            <button class="btn-solve" onclick="solveInputTask('task11')">Lösung anzeigen</button>
+        </div>
+    </div>
+
+    <!-- AUFGABE 12: Fehlerkorrektur -->
+    <div class="exercise-card" id="task12">
+        <div class="exercise-header">
+            <h3>12. Welcher Satz ist richtig?</h3>
+            <p>Wähle den Satz, der <strong>keinen</strong> Fehler enthält.</p>
+        </div>
+        <div class="question-row" data-answer="B">
+            <label class="mc-option"><input type="radio" name="t12" value="A"> <span class="ru">Он идет ко врачу.</span></label>
+            <label class="mc-option"><input type="radio" name="t12" value="B"> <span class="ru">Он идет к врачу.</span></label>
+        </div>
+        <div class="question-row" data-answer="A">
+            <label class="mc-option"><input type="radio" name="t12_2" value="A"> <span class="ru">Кофе со сливками.</span></label>
+            <label class="mc-option"><input type="radio" name="t12_2" value="B"> <span class="ru">Кофе с сливками.</span></label>
+        </div>
+        
+        <div class="controls">
+            <button class="btn-check" onclick="checkRadioTask('task12')">Überprüfen</button>
+            <button class="btn-reset" onclick="resetRadioTask('task12')">Zurücksetzen</button>
+            <button class="btn-solve" onclick="solveRadioTask('task12')">Lösung anzeigen</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    /* --- Logic for Radio Button Tasks (1, 2, 8, 12) --- */
+    function checkRadioTask(taskId) {
+        const container = document.getElementById(taskId);
+        const rows = container.querySelectorAll('.question-row');
+        
+        rows.forEach(row => {
+            const correctAnswer = row.getAttribute('data-answer');
+            const selected = row.querySelector('input:checked');
+            
+            // Clear previous styles
+            row.classList.remove('correct', 'incorrect');
+            
+            if (selected) {
+                if (selected.value === correctAnswer) {
+                    row.classList.add('correct');
+                } else {
+                    row.classList.add('incorrect');
+                }
+            } else {
+                row.classList.add('incorrect'); // Nothing selected counts as wrong
+            }
+        });
+    }
+
+    function resetRadioTask(taskId) {
+        const container = document.getElementById(taskId);
+        const inputs = container.querySelectorAll('input[type="radio"]');
+        const rows = container.querySelectorAll('.question-row');
+        
+        inputs.forEach(input => input.checked = false);
+        rows.forEach(row => row.classList.remove('correct', 'incorrect'));
+    }
+
+    function solveRadioTask(taskId) {
+        const container = document.getElementById(taskId);
+        const rows = container.querySelectorAll('.question-row');
+        
+        rows.forEach(row => {
+            const correctAnswer = row.getAttribute('data-answer');
+            const correctRadio = row.querySelector(`input[value="${correctAnswer}"]`);
+            if (correctRadio) correctRadio.checked = true;
+            row.classList.remove('correct', 'incorrect');
+        });
+    }
+
+    /* --- Logic for Input Tasks (3, 4, 10, 11) --- */
+    function checkInputTask(taskId) {
+        const container = document.getElementById(taskId);
+        const inputs = container.querySelectorAll('input[type="text"]');
+        
+        inputs.forEach(input => {
+            const correct = input.getAttribute('data-answer').toLowerCase();
+            const val = input.value.trim().toLowerCase();
+            
+            input.classList.remove('correct', 'incorrect');
+            if (val === correct) {
+                input.classList.add('correct');
+            } else {
+                input.classList.add('incorrect');
+            }
+        });
+    }
+
+    function resetInputTask(taskId) {
+        const container = document.getElementById(taskId);
+        const inputs = container.querySelectorAll('input[type="text"]');
+        inputs.forEach(input => {
+            input.value = '';
+            input.classList.remove('correct', 'incorrect');
+        });
+    }
+
+    function solveInputTask(taskId) {
+        const container = document.getElementById(taskId);
+        const inputs = container.querySelectorAll('input[type="text"]');
+        inputs.forEach(input => {
+            input.value = input.getAttribute('data-answer');
+            input.classList.remove('correct', 'incorrect');
+        });
+    }
+
+    /* --- Logic for Select Tasks (7, 9) --- */
+    function checkSelectTask(taskId) {
+        const container = document.getElementById(taskId);
+        const selects = container.querySelectorAll('select');
+        
+        selects.forEach(select => {
+            const correct = select.getAttribute('data-answer');
+            const val = select.value;
+            
+            select.classList.remove('correct', 'incorrect');
+            if (val === correct) {
+                select.classList.add('correct');
+            } else {
+                select.classList.add('incorrect');
+            }
+        });
+    }
+
+    function resetSelectTask(taskId) {
+        const container = document.getElementById(taskId);
+        const selects = container.querySelectorAll('select');
+        selects.forEach(select => {
+            select.selectedIndex = 0;
+            select.classList.remove('correct', 'incorrect');
+        });
+    }
+
+    function solveSelectTask(taskId) {
+        const container = document.getElementById(taskId);
+        const selects = container.querySelectorAll('select');
+        selects.forEach(select => {
+            select.value = select.getAttribute('data-answer');
+            select.classList.remove('correct', 'incorrect');
+        });
+    }
+
+    /* --- Logic for Drag and Drop Tasks (5, 6) --- */
+    // Setup Drag Events
+    const draggables = document.querySelectorAll('.draggable-item');
+    const dropZones = document.querySelectorAll('.drop-zone');
+
+    draggables.forEach(draggable => {
+        draggable.addEventListener('dragstart', () => {
+            draggable.classList.add('dragging');
+        });
+        draggable.addEventListener('dragend', () => {
+            draggable.classList.remove('dragging');
+        });
+    });
+
+    dropZones.forEach(zone => {
+        zone.addEventListener('dragover', e => {
+            e.preventDefault();
+            zone.classList.add('hover');
+        });
+        zone.addEventListener('dragleave', () => {
+            zone.classList.remove('hover');
+        });
+        zone.addEventListener('drop', e => {
+            e.preventDefault();
+            zone.classList.remove('hover');
+            const draggable = document.querySelector('.dragging');
+            // Ensure we are dropping in the correct task container
+            if (zone.closest('.drag-container') === draggable.closest('.drag-container')) {
+                zone.appendChild(draggable);
+            }
+        });
+    });
+
+    function checkDragTask(taskId) {
+        const container = document.getElementById(taskId);
+        const zones = container.querySelectorAll('.drop-zone');
+        
+        zones.forEach(zone => {
+            const type = zone.getAttribute('data-type'); // e.g., 'k' or 'ko'
+            const items = zone.querySelectorAll('.draggable-item');
+            
+            items.forEach(item => {
+                // Expected target is usually 'zone-k' or 'zone-ko'
+                const targetZoneId = item.getAttribute('data-target'); 
+                // Simple logic: does target ID match current Zone ID?
+                if (targetZoneId === zone.id) {
+                    item.style.backgroundColor = '#e8f5e9'; // Light green
+                    item.style.borderColor = 'green';
+                } else {
+                    item.style.backgroundColor = '#ffebee'; // Light red
+                    item.style.borderColor = 'red';
+                }
+            });
+        });
+    }
+
+    function resetDragTask(taskId) {
+        const container = document.getElementById(taskId);
+        const source = container.querySelector('.draggable-source');
+        const items = container.querySelectorAll('.draggable-item');
+        
+        // Move all items back to source
+        items.forEach(item => {
+            source.appendChild(item);
+            // Reset styles
+            item.style.backgroundColor = 'white';
+            item.style.borderColor = '#ccc';
+        });
+    }
+
+    function solveDragTask(taskId) {
+        const container = document.getElementById(taskId);
+        const items = container.querySelectorAll('.draggable-item');
+        
+        items.forEach(item => {
+            const targetId = item.getAttribute('data-target');
+            const targetZone = document.getElementById(targetId);
+            if(targetZone) {
+                targetZone.appendChild(item);
+                // Reset colors to neutral for solved state
+                item.style.backgroundColor = 'white';
+                item.style.borderColor = '#ccc';
+            }
+        });
+    }
+</script>
+
+</body>
+</html>
