@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Russisch: Der Fehlerteufel (К/КО & С/СО)</title>
+    <style>
+        :root {
+            /* Farbpalette: Grüntöne */
+            --primary-dark: #1b5e20;   /* Dunkelgrün für Überschriften/Active */
+            --primary-medium: #4caf50; /* Hauptgrün für Buttons */
+            --primary-light: #e8f5e9;  /* Sehr helles Grün für Hintergründe */
+            --accent: #81c784;         /* Akzent für Hover */
+            --text-main: #333333;
+            --white: #ffffff;
+            --error-text: #d32f2f;     /* Rot für Fehler im Satz */
+            --error-bg: #ffebee;
+            --success-text: #2e7d32;
+            --success-bg: #c8e6c9;
+            --border-radius: 8px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f7f4;
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border-top: 5px solid var(--primary-dark);
+        }
+
+        h1 {
+            color: var(--primary-dark);
+            margin: 0 0 10px 0;
+        }
+
+        .intro {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        /* Aufgaben-Karte */
+        .task-card {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border-left: 5px solid var(--primary-medium);
+        }
+
+        .task-header {
+            font-weight: bold;
+            color: #777;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+        }
+
+        /* Der Satz mit dem Fehler */
+        .sentence-box {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .error-spot {
+            color: var(--error-text);
+            text-decoration: underline;
+            text-decoration-style: wavy;
+            font-weight: bold;
+        }
+
+        .translation {
+            color: #666;
+            font-style: italic;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        /* Auswahl-Buttons (Optionen) */
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .option-btn {
+            background-color: var(--primary-light);
+            border: 2px solid transparent;
+            border-radius: var(--border-radius);
+            padding: 12px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+
+        .option-btn:hover {
+            background-color: #dcedc8;
+            border-color: var(--accent);
+        }
+
+        .option-btn.selected {
+            background-color: var(--primary-dark);
+            color: var(--white);
+            border-color: var(--primary-dark);
+            transform: scale(1.02);
+        }
+
+        /* Feedback Zustände für Optionen */
+        .option-btn.state-correct {
+            background-color: var(--success-bg) !important;
+            border-color: var(--success-text) !important;
+            color: var(--success-text) !important;
+        }
+
+        .option-btn.state-wrong {
+            background-color: var(--error-bg) !important;
+            border-color: var(--error-text) !important;
+            color: var(--error-text) !important;
+            opacity: 0.6;
+        }
+
+        /* Steuerungs-Buttons */
+        .controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+
+        .ctrl-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            font-weight: 600;
+            flex: 1;
+            transition: opacity 0.2s;
+        }
+
+        .btn-check {
+            background-color: var(--primary-medium);
+            color: white;
+        }
+        .btn-reset {
+            background-color: #90a4ae;
+            color: white;
+        }
+        .btn-solve {
+            background-color: #ffb74d; /* Orange für Lösung */
+            color: white;
+        }
+
+        .ctrl-btn:hover { opacity: 0.9; }
+
+        /* Feedback Textbereich */
+        .feedback-area {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        
+        .feedback-area.visible { display: block; }
+        .feedback-area.success { background-color: var(--success-bg); color: var(--success-text); border-left: 4px solid var(--success-text); }
+        .feedback-area.error { background-color: var(--error-bg); color: var(--error-text); border-left: 4px solid var(--error-text); }
+
+        @media (max-width: 500px) {
+            .controls { flex-direction: column; }
+            .option-btn { font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Der Fehlerteufel: К/КО & С/СО</h1>
+        <p class="intro">
+            In jedem Satz hat sich ein Fehler eingeschlichen. Finden Sie die korrekte Präposition.
+            Achten Sie auf die Aussprache und die Konsonantencluster.
+        </p>
+    </header>
+
+    <!-- Aufgabe 1 -->
+    <div class="task-card" id="task-1">
+        <div class="task-header">Aufgabe 1</div>
+        <div class="sentence-box">
+            Иди <span class="error-spot">к</span> мне!
+        </div>
+        <span class="translation">(Komm zu mir!)</span>
+
+        <div class="options-grid">
+            <button class="option-btn" onclick="selectOption(1, 'с')">с</button>
+            <button class="option-btn" onclick="selectOption(1, 'к')">к</button>
+            <button class="option-btn" onclick="selectOption(1, 'ко')">ко</button>
+        </div>
+
+        <div class="controls">
+            <button class="ctrl-btn btn-check" onclick="checkTask(1)">Überprüfen</button>
+            <button class="ctrl-btn btn-reset" onclick="resetTask(1)">Zurücksetzen</button>
+            <button class="ctrl-btn btn-solve" onclick="solveTask(1)">Lösung anzeigen</button>
+        </div>
+        <div class="feedback-area" id="feedback-1"></div>
+    </div>
+
+    <!-- Aufgabe 2 -->
+    <div class="task-card" id="task-2">
+        <div class="task-header">Aufgabe 2</div>
+        <div class="sentence-box">
+            Я пью кофе <span class="error-spot">с</span> сливками.
+        </div>
+        <span class="translation">(Ich trinke Kaffee mit Sahne.)</span>
+
+        <div class="options-grid">
+            <button class="option-btn" onclick="selectOption(2, 'со')">со</button>
+            <button class="option-btn" onclick="selectOption(2, 'с')">с</button>
+            <button class="option-btn" onclick="selectOption(2, 'к')">к</button>
+        </div>
+
+        <div class="controls">
+            <button class="ctrl-btn btn-check" onclick="checkTask(2)">Überprüfen</button>
+            <button class="ctrl-btn btn-reset" onclick="resetTask(2)">Zurücksetzen</button>
+            <button class="ctrl-btn btn-solve" onclick="solveTask(2)">Lösung anzeigen</button>
+        </div>
+        <div class="feedback-area" id="feedback-2"></div>
+    </div>
+
+    <!-- Aufgabe 3 -->
+    <div class="task-card" id="task-3">
+        <div class="task-header">Aufgabe 3</div>
+        <div class="sentence-box">
+            Задание готово <span class="error-spot">к</span> вторнику.
+        </div>
+        <span class="translation">(Die Aufgabe ist bis Dienstag fertig.)</span>
+
+        <div class="options-grid">
+            <button class="option-btn" onclick="selectOption(3, 'к')">к</button>
+            <button class="option-btn" onclick="selectOption(3, 'со')">со</button>
+            <button class="option-btn" onclick="selectOption(3, 'ко')">ко</button>
+        </div>
+
+        <div class="controls">
+            <button class="ctrl-btn btn-check" onclick="checkTask(3)">Überprüfen</button>
+            <button class="ctrl-btn btn-reset" onclick="resetTask(3)">Zurücksetzen</button>
+            <button class="ctrl-btn btn-solve" onclick="solveTask(3)">Lösung anzeigen</button>
+        </div>
+        <div class="feedback-area" id="feedback-3"></div>
+    </div>
+
+    <!-- Aufgabe 4 -->
+    <div class="task-card" id="task-4">
+        <div class="task-header">Aufgabe 4</div>
+        <div class="sentence-box">
+            Ты пойдешь <span class="error-spot">с</span> мной?
+        </div>
+        <span class="translation">(Gehst du mit mir?)</span>
+
+        <div class="options-grid">
+            <button class="option-btn" onclick="selectOption(4, 'со')">со</button>
+            <button class="option-btn" onclick="selectOption(4, 'к')">к</button>
+            <button class="option-btn" onclick="selectOption(4, 'ко')">ко</button>
+        </div>
+
+        <div class="controls">
+            <button class="ctrl-btn btn-check" onclick="checkTask(4)">Überprüfen</button>
+            <button class="ctrl-btn btn-reset" onclick="resetTask(4)">Zurücksetzen</button>
+            <button class="ctrl-btn btn-solve" onclick="solveTask(4)">Lösung anzeigen</button>
+        </div>
+        <div class="feedback-area" id="feedback-4"></div>
+    </div>
+
+    <!-- Aufgabe 5 (Die Ausnahme) -->
+    <div class="task-card" id="task-5">
+        <div class="task-header">Aufgabe 5</div>
+        <div class="sentence-box">
+            Мы идем <span class="error-spot">ко</span> врачу.
+        </div>
+        <span class="translation">(Wir gehen zum Arzt.)</span>
+
+        <div class="options-grid">
+            <button class="option-btn" onclick="selectOption(5, 'ко')">ко</button>
+            <button class="option-btn" onclick="selectOption(5, 'к')">к</button>
+            <button class="option-btn" onclick="selectOption(5, 'со')">со</button>
+        </div>
+
+        <div class="controls">
+            <button class="ctrl-btn btn-check" onclick="checkTask(5)">Überprüfen</button>
+            <button class="ctrl-btn btn-reset" onclick="resetTask(5)">Zurücksetzen</button>
+            <button class="ctrl-btn btn-solve" onclick="solveTask(5)">Lösung anzeigen</button>
+        </div>
+        <div class="feedback-area" id="feedback-5"></div>
+    </div>
+
+    <!-- Aufgabe 6 -->
+    <div class="task-card" id="task-6">
+        <div class="task-header">Aufgabe 6</div>
+        <div class="sentence-box">
+            Он переезжает <span class="error-spot">с</span> шкафом.
+        </div>
+        <span class="translation">(Er zieht mit dem Schrank um.)</span>
+
+        <div class="options-grid">
+            <button class="option-btn" onclick="selectOption(6, 'с')">с</button>
+            <button class="option-btn" onclick="selectOption(6, 'к')">к</button>
+            <button class="option-btn" onclick="selectOption(6, 'со')">со</button>
+        </div>
+
+        <div class="controls">
+            <button class="ctrl-btn btn-check" onclick="checkTask(6)">Überprüfen</button>
+            <button class="ctrl-btn btn-reset" onclick="resetTask(6)">Zurücksetzen</button>
+            <button class="ctrl-btn btn-solve" onclick="solveTask(6)">Lösung anzeigen</button>
+        </div>
+        <div class="feedback-area" id="feedback-6"></div>
+    </div>
+</div>
+
+<script>
+    // Konfiguration der korrekten Antworten und Erklärungen
+    const solutions = {
+        1: {
+            correct: 'ко',
+            explanation: "Richtig! Vor 'мне' (Dativ von 'я') benutzen wir immer <b>ко</b> aus phonetischen Gründen."
+        },
+        2: {
+            correct: 'со',
+            explanation: "Korrekt! Wenn ein Wort mit 's' + Konsonant beginnt (hier: <b>сл</b>ивками), nutzen wir <b>со</b>, um drei Konsonanten hintereinander zu vermeiden."
+        },
+        3: {
+            correct: 'ко',
+            explanation: "Sehr gut! 'Ко вторнику' ist eine feste Wendung. Da 'вторник' mit einer Konsonantenhäufung beginnt, wird <b>ко</b> verwendet."
+        },
+        4: {
+            correct: 'со',
+            explanation: "Richtig! Vor 'мной' (Instrumental von 'я') steht immer <b>со</b>."
+        },
+        5: {
+            correct: 'к',
+            explanation: "Genau! Das ist eine Ausnahme. Obwohl 'врач' mit zwei Konsonanten beginnt, sagen wir <b>к врачу</b> (nicht ко)."
+        },
+        6: {
+            correct: 'со',
+            explanation: "Richtig! Das Wort beginnt mit 'sch' (ш) + Konsonant (к). Hier brauchen wir <b>со</b> шкафом für eine flüssige Aussprache."
+        }
+    };
+
+    // Speicher für die Auswahl des Nutzers pro Aufgabe
+    let userSelections = {};
+
+    /**
+     * Wählt eine Option aus und markiert den Button visuell.
+     */
+    function selectOption(taskId, value) {
+        // Speichern
+        userSelections[taskId] = value;
+
+        // Visuelles Feedback für Auswahl (Active State)
+        const container = document.getElementById(`task-${taskId}`);
+        const buttons = container.querySelectorAll('.option-btn');
+        
+        buttons.forEach(btn => {
+            btn.classList.remove('selected', 'state-correct', 'state-wrong'); // Reset states
+            if (btn.innerText === value) {
+                btn.classList.add('selected');
+            }
+        });
+
+        // Feedback verstecken bei neuer Auswahl
+        const feedback = document.getElementById(`feedback-${taskId}`);
+        feedback.className = 'feedback-area';
+        feedback.innerHTML = '';
+    }
+
+    /**
+     * Überprüft die aktuelle Auswahl.
+     */
+    function checkTask(taskId) {
+        const selectedValue = userSelections[taskId];
+        const feedback = document.getElementById(`feedback-${taskId}`);
+        const solution = solutions[taskId];
+        const container = document.getElementById(`task-${taskId}`);
+        const buttons = container.querySelectorAll('.option-btn');
+
+        if (!selectedValue) {
+            feedback.className = 'feedback-area error visible';
+            feedback.innerHTML = "Bitte wählen Sie zuerst eine Korrektur aus.";
+            return;
+        }
+
+        if (selectedValue === solution.correct) {
+            // Richtig
+            feedback.className = 'feedback-area success visible';
+            feedback.innerHTML = `<strong>Richtig!</strong> ${solution.explanation}`;
+            
+            // Buttons einfärben
+            buttons.forEach(btn => {
+                if (btn.innerText === selectedValue) btn.classList.add('state-correct');
+            });
+        } else {
+            // Falsch
+            feedback.className = 'feedback-area error visible';
+            feedback.innerHTML = "Das ist leider nicht richtig. Versuchen Sie es noch einmal!";
+            
+            // Buttons einfärben
+            buttons.forEach(btn => {
+                if (btn.innerText === selectedValue) btn.classList.add('state-wrong');
+            });
+        }
+    }
+
+    /**
+     * Setzt die Aufgabe zurück.
+     */
+    function resetTask(taskId) {
+        userSelections[taskId] = null;
+        const container = document.getElementById(`task-${taskId}`);
+        const buttons = container.querySelectorAll('.option-btn');
+        const feedback = document.getElementById(`feedback-${taskId}`);
+
+        buttons.forEach(btn => {
+            btn.classList.remove('selected', 'state-correct', 'state-wrong');
+        });
+
+        feedback.className = 'feedback-area';
+        feedback.innerHTML = '';
+    }
+
+    /**
+     * Zeigt die Lösung direkt an.
+     */
+    function solveTask(taskId) {
+        const solution = solutions[taskId];
+        const container = document.getElementById(`task-${taskId}`);
+        const buttons = container.querySelectorAll('.option-btn');
+        const feedback = document.getElementById(`feedback-${taskId}`);
+
+        // Alles zurücksetzen
+        buttons.forEach(btn => {
+            btn.classList.remove('selected', 'state-correct', 'state-wrong');
+            // Richtigen Button markieren
+            if (btn.innerText === solution.correct) {
+                btn.classList.add('state-correct');
+                // Simuliere Auswahl, damit weitere Klicks logisch bleiben
+                userSelections[taskId] = solution.correct;
+            }
+        });
+
+        feedback.className = 'feedback-area success visible';
+        feedback.innerHTML = `<strong>Lösung:</strong> ${solution.explanation}`;
+    }
+</script>
+
+</body>
+</html>
