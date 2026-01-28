@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bild-Wort-Matching: К/КО & С/СО (3x4)</title>
+    <style>
+        :root {
+            /* Farbschema: Grüntöne */
+            --primary-dark: #2e7d32;
+            --primary-medium: #4caf50;
+            --primary-light: #e8f5e9;
+            --accent: #81c784;
+            
+            --correct: #2e7d32; /* Dunkelgrün */
+            --wrong: #d32f2f;   /* Rot */
+            --text-color: #333;
+            --bg-color: #f1f8f6;
+            
+            --card-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --radius: 12px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            padding-bottom: 100px; /* Platz für die fixierte Leiste unten */
+        }
+
+        .container {
+            max-width: 1000px; /* Begrenzte Breite für kompaktes Design */
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: var(--primary-dark);
+            margin: 0;
+            font-size: 2rem;
+        }
+
+        p.intro {
+            color: #666;
+            max-width: 700px;
+            margin: 10px auto;
+        }
+
+        /* GRID LAYOUT - 3x4 Raster */
+        .grid-container {
+            display: grid;
+            gap: 20px;
+            /* Standard: Mobile First (1 Spalte) */
+            grid-template-columns: 1fr;
+        }
+
+        /* Tablet: 2 Spalten */
+        @media (min-width: 600px) {
+            .grid-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Desktop: Exakt 3 Spalten (ergibt 3x4 bei 12 Items) */
+        @media (min-width: 900px) {
+            .grid-container {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* CARD DESIGN */
+        .card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--card-shadow);
+            padding: 20px;
+            text-align: center;
+            border-top: 5px solid var(--primary-medium);
+            transition: transform 0.2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        }
+
+        .emoji {
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .german-word {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: var(--primary-dark);
+            min-height: 1.5em;
+        }
+
+        /* BUTTONS */
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .case-btn {
+            background-color: var(--primary-light);
+            border: 2px solid transparent;
+            border-radius: 6px;
+            padding: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            transition: all 0.2s;
+        }
+
+        .case-btn:hover {
+            background-color: #c8e6c9;
+            border-color: var(--primary-medium);
+        }
+
+        /* Active State (Selected by User) */
+        .case-btn.selected {
+            background-color: var(--primary-medium);
+            color: white;
+            border-color: var(--primary-dark);
+        }
+
+        /* Feedback States */
+        .case-btn.feedback-correct {
+            background-color: var(--correct) !important;
+            color: white !important;
+            border-color: darkgreen !important;
+        }
+
+        .case-btn.feedback-wrong {
+            background-color: var(--wrong) !important;
+            color: white !important;
+            opacity: 0.6;
+        }
+
+        /* SOLUTION TEXT (Hidden by default) */
+        .solution-text {
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px dashed #ccc;
+            color: var(--primary-dark);
+            font-weight: bold;
+            font-size: 1rem;
+            display: none; /* Versteckt */
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .solution-text span {
+            display: block;
+            font-size: 0.8rem;
+            color: #666;
+            font-weight: normal;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* GLOBAL CONTROLS (Sticky Bottom) */
+        .controls-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: white;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .ctrl-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            color: white;
+            transition: opacity 0.2s;
+            min-width: 120px;
+        }
+
+        .ctrl-btn:hover { opacity: 0.9; }
+
+        .btn-check { background-color: var(--primary-dark); }
+        .btn-reset { background-color: #78909c; }
+        .btn-solve { background-color: #ffa726; }
+
+        /* Responsive Anpassungen für kleine Handys */
+        @media (max-width: 600px) {
+            .controls-bar {
+                flex-direction: row;
+                flex-wrap: wrap;
+                padding: 10px;
+            }
+            .ctrl-btn {
+                flex: 1;
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Bild-Wort-Matching</h1>
+        <p class="intro">
+            Bestimmen Sie den richtigen Fall (Kasus) für die Übersetzung. 
+            Denken Sie an die Präpositionen: <strong>К/КО</strong> verlangt den Dativ. 
+            <strong>С/СО</strong> verlangt meist den Instrumental ("mit"), aber bei der Bedeutung "von/seit" den Genitiv.
+        </p>
+    </header>
+
+    <div class="grid-container" id="cards-wrapper">
+        <!-- Karten werden hier per JavaScript eingefügt -->
+    </div>
+</div>
+
+<div class="controls-bar">
+    <button class="ctrl-btn btn-check" onclick="checkAll()">Überprüfen</button>
+    <button class="ctrl-btn btn-reset" onclick="resetAll()">Zurücksetzen</button>
+    <button class="ctrl-btn btn-solve" onclick="showSolution()">Lösung</button>
+</div>
+
+<script>
+    // DATEN: Die 12 Aufgaben
+    // case: 'dat' (Dativ), 'ins' (Instrumental), 'gen' (Genitiv)
+    const items = [
+        {
+            id: 1,
+            emoji: "👨‍⚕️",
+            german: "Zum Arzt",
+            russian: "к врачу",
+            case: "dat",
+            note: "Standard К + Dativ"
+        },
+        {
+            id: 2,
+            emoji: "☕",
+            german: "Mit Sahne",
+            russian: "со сливками",
+            case: "ins",
+            note: "С/СО + Instrumental (Mit)"
+        },
+        {
+            id: 3,
+            emoji: "🥶",
+            german: "Zu mir",
+            russian: "ко мне",
+            case: "dat",
+            note: "КО vor mn-Cluster"
+        },
+        {
+            id: 4,
+            emoji: "🧊",
+            german: "Mit Eis",
+            russian: "со льдом",
+            case: "ins",
+            note: "СО vor l + Konsonant"
+        },
+        {
+            id: 5,
+            emoji: "📅",
+            german: "Bis Dienstag",
+            russian: "ко вторнику",
+            case: "dat",
+            note: "Frist/Zeitpunkt -> Dativ"
+        },
+        {
+            id: 6,
+            emoji: "🤝",
+            german: "Mit mir",
+            russian: "со мной",
+            case: "ins",
+            note: "СО vor mn-Cluster"
+        },
+        {
+            id: 7,
+            emoji: "🥵",
+            german: "Von der Stirn",
+            russian: "со лба",
+            case: "gen",
+            note: "С/СО bedeutet hier 'von/herab' -> Genitiv"
+        },
+        {
+            id: 8,
+            emoji: "🏠",
+            german: "Zum Haus",
+            russian: "к дому",
+            case: "dat",
+            note: "Richtung -> Dativ"
+        },
+        {
+            id: 9,
+            emoji: "🧹",
+            german: "Mit dem Wischmopp",
+            russian: "со шваброй",
+            case: "ins",
+            note: "Instrumental des Werkzeugs"
+        },
+        {
+            id: 10,
+            emoji: "👄",
+            german: "Zum Mund",
+            russian: "ко рту",
+            case: "dat",
+            note: "КО vor rt-Cluster"
+        },
+        {
+            id: 11,
+            emoji: "🌟",
+            german: "Mit dem Star",
+            russian: "со звездой",
+            case: "ins",
+            note: "СО vor zv-Cluster"
+        },
+        {
+            id: 12,
+            emoji: "📉",
+            german: "Ab Dienstag",
+            russian: "со вторника",
+            case: "gen",
+            note: "С/СО bedeutet hier 'seit/ab' -> Genitiv"
+        }
+    ];
+
+    // RENDER LOGIK
+    const wrapper = document.getElementById('cards-wrapper');
+
+    function renderCards() {
+        wrapper.innerHTML = ''; // Clear existing
+        items.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.setAttribute('data-id', item.id);
+            card.setAttribute('data-correct', item.case);
+
+            card.innerHTML = `
+                <div>
+                    <span class="emoji">${item.emoji}</span>
+                    <div class="german-word">${item.german}</div>
+                </div>
+                <div class="options-container">
+                    <button class="case-btn" onclick="selectOption(this, 'dat', ${item.id})">Dativ (К/КО)</button>
+                    <button class="case-btn" onclick="selectOption(this, 'ins', ${item.id})">Instrumental (Mit)</button>
+                    <button class="case-btn" onclick="selectOption(this, 'gen', ${item.id})">Genitiv (Von/Ab)</button>
+                </div>
+                <div class="solution-text" id="sol-${item.id}">
+                    ${item.russian}
+                    <span>${item.note}</span>
+                </div>
+            `;
+            wrapper.appendChild(card);
+        });
+    }
+
+    // STATE MANAGEMENT
+    let userSelections = {}; // Speichert { id: 'dat'/'ins'/'gen' }
+
+    function selectOption(btnElement, caseType, itemId) {
+        // Speichern der Auswahl
+        userSelections[itemId] = caseType;
+
+        // Visuelles Update (Nur "Selected" State, noch kein Richtig/Falsch)
+        const card = btnElement.closest('.card');
+        const buttons = card.querySelectorAll('.case-btn');
+        
+        buttons.forEach(btn => {
+            btn.classList.remove('selected', 'feedback-correct', 'feedback-wrong');
+        });
+        
+        btnElement.classList.add('selected');
+
+        // Lösungstext verstecken, falls er offen war (neuer Versuch)
+        const solText = document.getElementById(`sol-${itemId}`);
+        solText.style.display = 'none';
+    }
+
+    // BUTTON ACTIONS
+
+    function checkAll() {
+        items.forEach(item => {
+            const card = document.querySelector(`.card[data-id="${item.id}"]`);
+            const selectedValue = userSelections[item.id];
+            
+            if (!selectedValue) return; // Nichts ausgewählt -> nichts tun
+
+            const buttons = card.querySelectorAll('.case-btn');
+            
+            // Erstmal alles säubern
+            buttons.forEach(btn => btn.classList.remove('feedback-correct', 'feedback-wrong'));
+
+            // Button finden, der ausgewählt wurde
+            const selectedBtn = Array.from(buttons).find(b => b.classList.contains('selected'));
+            
+            if (selectedBtn) {
+                if (selectedValue === item.case) {
+                    selectedBtn.classList.add('feedback-correct');
+                } else {
+                    selectedBtn.classList.add('feedback-wrong');
+                }
+            }
+        });
+    }
+
+    function resetAll() {
+        userSelections = {};
+        renderCards(); // Einfachste Methode: Neu rendern
+    }
+
+    function showSolution() {
+        items.forEach(item => {
+            const card = document.querySelector(`.card[data-id="${item.id}"]`);
+            const solText = document.getElementById(`sol-${item.id}`);
+            const buttons = card.querySelectorAll('.case-btn');
+
+            // 1. Visuelles Reset
+            buttons.forEach(btn => btn.classList.remove('selected', 'feedback-correct', 'feedback-wrong'));
+
+            // 2. Richtigen Button finden und markieren (Index Logic)
+            let btnIndex = 0;
+            if (item.case === 'ins') btnIndex = 1;
+            if (item.case === 'gen') btnIndex = 2;
+            
+            buttons[btnIndex].classList.add('feedback-correct');
+
+            // 3. Text anzeigen
+            solText.style.display = 'block';
+        });
+    }
+
+    // Init
+    renderCards();
+
+</script>
+
+</body>
+</html>
