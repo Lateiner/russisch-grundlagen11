@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Russische Endungen: К/КО & С/СО</title>
+    <style>
+        :root {
+            /* Farbschema: Angenehme Grüntöne */
+            --primary-dark: #1b5e20;
+            --primary-main: #43a047;
+            --primary-light: #e8f5e9;
+            --accent: #a5d6a7;
+            
+            --correct-color: #2e7d32;
+            --wrong-color: #c62828;
+            
+            --bg-color: #f1f8f6;
+            --text-color: #333;
+            
+            --card-radius: 12px;
+            --btn-size: 50px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            padding-bottom: 100px; /* Platz für Footer */
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            color: var(--primary-dark);
+            margin-bottom: 10px;
+        }
+
+        p.intro {
+            font-size: 1.1rem;
+            color: #555;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* GRID LAYOUT */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        /* CARD DESIGN */
+        .card {
+            background: white;
+            border-radius: var(--card-radius);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            padding: 25px;
+            text-align: center;
+            border-top: 5px solid var(--primary-main);
+            transition: transform 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .emoji {
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .hint {
+            font-size: 0.9rem;
+            color: #777;
+            font-style: italic;
+            margin-bottom: 15px;
+            min-height: 1.2em;
+        }
+
+        /* WORD PUZZLE AREA */
+        .puzzle-area {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary-dark);
+            margin-bottom: 25px;
+            background-color: var(--primary-light);
+            padding: 10px 20px;
+            border-radius: 8px;
+            display: inline-block;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .gap {
+            color: #333;
+            border-bottom: 2px solid var(--primary-main);
+            min-width: 30px;
+            display: inline-block;
+            text-align: center;
+            transition: color 0.3s;
+        }
+
+        .gap.filled {
+            border-bottom: none;
+            color: var(--primary-dark);
+        }
+
+        .gap.correct { color: var(--correct-color); font-weight: 900; }
+        .gap.wrong { color: var(--wrong-color); text-decoration: line-through; }
+
+        /* ROUND BUTTONS */
+        .options-row {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .option-btn {
+            width: var(--btn-size);
+            height: var(--btn-size);
+            border-radius: 50%;
+            border: 2px solid #ddd;
+            background-color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #555;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary-main);
+            transform: scale(1.1);
+            background-color: var(--primary-light);
+        }
+
+        /* Active State (Selected) */
+        .option-btn.selected {
+            background-color: var(--primary-main);
+            color: white;
+            border-color: var(--primary-dark);
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        /* Feedback States for Buttons */
+        .option-btn.feedback-correct {
+            background-color: var(--correct-color);
+            color: white;
+            border-color: darkgreen;
+        }
+        
+        /* CONTROLS (Sticky Bottom) */
+        .controls {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: white;
+            padding: 15px;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            z-index: 100;
+        }
+
+        .ctrl-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            color: white;
+            transition: opacity 0.2s;
+        }
+
+        .ctrl-btn:hover { opacity: 0.9; }
+
+        .btn-check { background-color: var(--primary-main); }
+        .btn-reset { background-color: #90a4ae; }
+        .btn-solve { background-color: #ffa726; }
+
+        @media (max-width: 600px) {
+            .puzzle-area { font-size: 1.5rem; }
+            .option-btn { width: 45px; height: 45px; font-size: 1rem; }
+            .controls { flex-wrap: wrap; }
+            .ctrl-btn { flex: 1; padding: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Morphologie-Training</h1>
+        <p class="intro">
+            Wähle die richtige Endung für das Wort. Achte auf die Präposition!<br>
+            <strong>К/КО</strong> + Dativ | <strong>С/СО</strong> + Instrumental (mit) / Genitiv (von).
+        </p>
+    </header>
+
+    <div class="cards-grid" id="grid">
+        <!-- Cards werden per JS generiert -->
+    </div>
+</div>
+
+<div class="controls">
+    <button class="ctrl-btn btn-check" onclick="checkAll()">Überprüfen</button>
+    <button class="ctrl-btn btn-reset" onclick="resetAll()">Zurücksetzen</button>
+    <button class="ctrl-btn btn-solve" onclick="showSolution()">Lösung</button>
+</div>
+
+<script>
+    // DATEN: 12 Aufgaben zur Morphologie
+    const tasks = [
+        {
+            id: 1,
+            emoji: "👨‍⚕️",
+            hint: "Zum Arzt (Dativ)",
+            preposition: "к",
+            stem: "врач",
+            correct: "у",
+            options: ["а", "у", "ом"]
+        },
+        {
+            id: 2,
+            emoji: "☕",
+            hint: "Mit Zucker (Instrumental)",
+            preposition: "с",
+            stem: "сахар",
+            correct: "ом",
+            options: ["ом", "а", "у"]
+        },
+        {
+            id: 3,
+            emoji: "📅",
+            hint: "Bis Dienstag (Dativ)",
+            preposition: "ко",
+            stem: "вторник",
+            correct: "у",
+            options: ["ом", "у", "а"]
+        },
+        {
+            id: 4,
+            emoji: "🧁",
+            hint: "Mit Sahne (Plural, Instrumental)",
+            preposition: "со",
+            stem: "сливк",
+            correct: "ами",
+            options: ["ами", "ов", "и"]
+        },
+        {
+            id: 5,
+            emoji: "🥵",
+            hint: "Von der Stirn (Genitiv, herab)",
+            preposition: "со",
+            stem: "лб",
+            correct: "а",
+            options: ["у", "ом", "а"]
+        },
+        {
+            id: 6,
+            emoji: "🤝",
+            hint: "Mit mir (Instrumental)",
+            preposition: "со",
+            stem: "мн",
+            correct: "ой",
+            options: ["ей", "ой", "ю"]
+        },
+        {
+            id: 7,
+            emoji: "🏠",
+            hint: "Zum Haus (Dativ)",
+            preposition: "к",
+            stem: "дом",
+            correct: "у",
+            options: ["а", "у", "е"]
+        },
+        {
+            id: 8,
+            emoji: "👱‍♀️",
+            hint: "Mit Mama (Instrumental)",
+            preposition: "с",
+            stem: "мам",
+            correct: "ой",
+            options: ["у", "ой", "ы"]
+        },
+        {
+            id: 9,
+            emoji: "🍹",
+            hint: "Mit Eis (Instrumental)",
+            preposition: "со",
+            stem: "льд",
+            correct: "ом",
+            options: ["а", "у", "ом"]
+        },
+        {
+            id: 10,
+            emoji: "🪟",
+            hint: "Zum Fenster (Dativ)",
+            preposition: "к",
+            stem: "окн",
+            correct: "у",
+            options: ["о", "у", "а"]
+        },
+        {
+            id: 11,
+            emoji: "👨",
+            hint: "Zu Papa (Dativ, m. auf -a)",
+            preposition: "к",
+            stem: "пап",
+            correct: "е",
+            options: ["у", "е", "а"]
+        },
+        {
+            id: 12,
+            emoji: "🍽️",
+            hint: "Vom Tisch (Genitiv, herab)",
+            preposition: "со",
+            stem: "стол",
+            correct: "а",
+            options: ["ом", "у", "а"]
+        }
+    ];
+
+    // State Management
+    let userAnswers = {}; // { taskId: "selectedOption" }
+
+    const grid = document.getElementById('grid');
+
+    // Initialisierung
+    function render() {
+        grid.innerHTML = '';
+        tasks.forEach(task => {
+            // Shuffle Options für Abwechslung (optional, hier fix für Kontrolle)
+            // const shuffledOptions = [...task.options].sort(() => Math.random() - 0.5);
+            
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.dataset.id = task.id;
+
+            card.innerHTML = `
+                <span class="emoji">${task.emoji}</span>
+                <div class="hint">${task.hint}</div>
+                
+                <div class="puzzle-area">
+                    ${task.preposition} ${task.stem}<span class="gap" id="gap-${task.id}">_</span>
+                </div>
+
+                <div class="options-row">
+                    ${task.options.map(opt => `
+                        <button class="option-btn" onclick="selectOption(${task.id}, '${opt}', this)">
+                            ${opt}
+                        </button>
+                    `).join('')}
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    // Interaktion: Option auswählen
+    function selectOption(id, value, btnElement) {
+        // 1. Speichern
+        userAnswers[id] = value;
+
+        // 2. Visuelles Feedback Buttons
+        const card = document.querySelector(`.card[data-id="${id}"]`);
+        const buttons = card.querySelectorAll('.option-btn');
+        buttons.forEach(btn => btn.classList.remove('selected'));
+        btnElement.classList.add('selected');
+
+        // 3. Lücke füllen
+        const gap = document.getElementById(`gap-${id}`);
+        gap.textContent = value;
+        gap.classList.add('filled');
+        gap.classList.remove('correct', 'wrong'); // Reset Feedback
+    }
+
+    // Überprüfen
+    function checkAll() {
+        tasks.forEach(task => {
+            const userAnswer = userAnswers[task.id];
+            const gap = document.getElementById(`gap-${task.id}`);
+            const card = document.querySelector(`.card[data-id="${task.id}"]`);
+            
+            if (!userAnswer) {
+                // Nicht ausgefüllt
+                return; 
+            }
+
+            if (userAnswer === task.correct) {
+                gap.classList.add('correct');
+                // Button grün markieren (optional)
+            } else {
+                gap.classList.add('wrong');
+            }
+        });
+    }
+
+    // Zurücksetzen
+    function resetAll() {
+        userAnswers = {};
+        const gaps = document.querySelectorAll('.gap');
+        const buttons = document.querySelectorAll('.option-btn');
+
+        gaps.forEach(gap => {
+            gap.textContent = '_';
+            gap.classList.remove('filled', 'correct', 'wrong');
+        });
+
+        buttons.forEach(btn => {
+            btn.classList.remove('selected', 'feedback-correct');
+        });
+    }
+
+    // Lösung anzeigen
+    function showSolution() {
+        tasks.forEach(task => {
+            // 1. Lücke korrekt füllen
+            const gap = document.getElementById(`gap-${task.id}`);
+            gap.textContent = task.correct;
+            gap.classList.add('filled', 'correct');
+            gap.classList.remove('wrong');
+
+            // 2. Richtigen Button markieren
+            const card = document.querySelector(`.card[data-id="${task.id}"]`);
+            const buttons = card.querySelectorAll('.option-btn');
+            
+            buttons.forEach(btn => {
+                btn.classList.remove('selected'); // Alte Auswahl weg
+                if (btn.innerText.trim() === task.correct) {
+                    btn.classList.add('feedback-correct');
+                }
+            });
+
+            // State updaten damit beim Klick nichts kaputt geht
+            userAnswers[task.id] = task.correct;
+        });
+    }
+
+    // Start
+    render();
+
+</script>
+
+</body>
+</html>
