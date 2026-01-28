@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visuelles Lernen: К/КО und С/СО (Russisch)</title>
+    <style>
+        :root {
+            /* Design-Farbschema (Grüntöne) */
+            --bg-body: #f1f8f5;
+            --bg-paper: #ffffff;
+            --primary-dark: #2e7d32;
+            --primary-light: #c8e6c9;
+            --text-main: #333;
+            --border-radius: 8px;
+            
+            /* Markierungsfarben (Kräftig) */
+            --mark-blue: #bbdefb; /* Hintergrund */
+            --mark-blue-border: #1976d2; /* Rand/Text */
+            
+            --mark-red: #ffcdd2;
+            --mark-red-border: #d32f2f;
+            
+            --mark-green: #c8e6c9;
+            --mark-green-border: #388e3c;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.8;
+            padding-bottom: 80px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--primary-dark);
+        }
+
+        /* Sticky Toolbar */
+        .sticky-toolbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background-color: var(--primary-dark);
+            padding: 15px;
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .tool-btn {
+            border: 2px solid white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.95rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+            background-color: white;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tool-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Active States for Toolbar */
+        .tool-btn.active {
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+
+        .tool-btn.blue.active { background-color: var(--mark-blue); border-color: var(--mark-blue-border); color: var(--mark-blue-border); }
+        .tool-btn.red.active { background-color: var(--mark-red); border-color: var(--mark-red-border); color: var(--mark-red-border); }
+        .tool-btn.green.active { background-color: var(--mark-green); border-color: var(--mark-green-border); color: var(--mark-green-border); }
+
+        /* Farb-Indikatoren in den Buttons */
+        .dot {
+            height: 12px;
+            width: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .dot.blue { background-color: var(--mark-blue-border); }
+        .dot.red { background-color: var(--mark-red-border); }
+        .dot.green { background-color: var(--mark-green-border); }
+
+        /* Text Area */
+        .text-card {
+            background-color: var(--bg-paper);
+            padding: 40px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            margin-top: 30px;
+            font-size: 1.3rem; /* Etwas größer für kyrillischen Text */
+            text-align: justify;
+        }
+
+        /* Interaktive Wörter */
+        .interactive-word {
+            padding: 2px 4px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: background-color 0.2s;
+            position: relative;
+            white-space: nowrap; /* Zeilenumbruch innerhalb der Phrase vermeiden */
+        }
+
+        .interactive-word:hover {
+            background-color: #eee;
+        }
+
+        /* Applied Styles on Words */
+        .interactive-word.marked-blue { background-color: var(--mark-blue); color: var(--mark-blue-border); border-color: var(--mark-blue); }
+        .interactive-word.marked-red { background-color: var(--mark-red); color: var(--mark-red-border); border-color: var(--mark-red); }
+        .interactive-word.marked-green { background-color: var(--mark-green); color: var(--mark-green-border); border-color: var(--mark-green); }
+
+        /* Error / Correction Styles */
+        .interactive-word.error {
+            border: 2px dashed red !important;
+        }
+        
+        .interactive-word.missed {
+            border-bottom: 3px solid orange !important;
+        }
+
+        /* Controls Bottom */
+        .controls {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .ctrl-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+            transition: opacity 0.2s;
+        }
+        
+        .ctrl-btn:hover { opacity: 0.9; }
+        .btn-check { background-color: var(--primary-dark); }
+        .btn-reset { background-color: #78909c; }
+        .btn-solve { background-color: #ffa726; }
+
+        /* Info Box */
+        .info-box {
+            margin-top: 40px;
+            background-color: #e8f5e9;
+            border-left: 5px solid var(--primary-dark);
+            padding: 20px;
+            border-radius: 4px;
+        }
+
+        h3 { color: var(--primary-dark); margin-top: 0; }
+
+        @media (max-width: 600px) {
+            .text-card { padding: 20px; font-size: 1.1rem; }
+            .sticky-toolbar { padding: 10px; }
+            .tool-btn { padding: 8px 12px; font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Text-Markierung: К/КО & С/СО</h1>
+        <p>Lies den russischen Text. Wähle oben einen Stift und markiere die passenden Ausdrücke im Text.</p>
+    </header>
+</div>
+
+<!-- Sticky Toolbar -->
+<div class="sticky-toolbar">
+    <button class="tool-btn blue" onclick="setTool('blue')">
+        <span class="dot blue"></span> Предлог К
+    </button>
+    <button class="tool-btn red" onclick="setTool('red')">
+        <span class="dot red"></span> Предлог КО
+    </button>
+    <button class="tool-btn green" onclick="setTool('green')">
+        <span class="dot green"></span> Предлоги С / СО
+    </button>
+</div>
+
+<div class="container">
+    <div class="text-card" id="text-content">
+        <!-- Der russische Text -->
+        <p>
+            Сегодня у меня очень важный день. Утром я иду 
+            <span class="interactive-word" data-solution="blue">к врачу</span>. 
+            Потом я поеду в гости 
+            <span class="interactive-word" data-solution="blue">к брату</span>. 
+            Он позвонил и сказал: «Приезжай 
+            <span class="interactive-word" data-solution="red">ко мне</span>!». 
+            У него большой красивый дом 
+            <span class="interactive-word" data-solution="green">с садом</span>. 
+            Мы должны подготовиться 
+            <span class="interactive-word" data-solution="red">ко вторнику</span>, 
+            потому что у нас экзамен. Я люблю пить чай 
+            <span class="interactive-word" data-solution="green">с лимоном</span>, 
+            а мой брат пьет кофе 
+            <span class="interactive-word" data-solution="green">со сливками</span>. 
+            Вечером мы пойдем гулять 
+            <span class="interactive-word" data-solution="green">с собакой</span>. 
+            Мы подойдем 
+            <span class="interactive-word" data-solution="blue">к парку</span>. 
+            Там я встречусь 
+            <span class="interactive-word" data-solution="green">со школьным</span> 
+            другом. Мы вместе пойдем 
+            <span class="interactive-word" data-solution="red">ко второму</span> 
+            входу в кинотеатр.
+        </p>
+    </div>
+
+    <div class="controls">
+        <button class="ctrl-btn btn-check" onclick="checkAnswers()">Überprüfen</button>
+        <button class="ctrl-btn btn-reset" onclick="resetText()">Zurücksetzen</button>
+        <button class="ctrl-btn btn-solve" onclick="showSolution()">Lösung anzeigen</button>
+    </div>
+
+    <!-- Erklärungen / Vokabeln -->
+    <div class="info-box">
+        <h3>Hilfe & Vokabeln</h3>
+        <ul>
+            <li><strong style="color: var(--mark-blue-border)">Blau (К):</strong> Standardform (z.B. к врачу = zum Arzt).</li>
+            <li><strong style="color: var(--mark-red-border)">Rot (КО):</strong> Vor Wörtern mit schwierigem Konsonantenanfang (ко мне = zu mir) oder festen Ausdrücken (ко вторнику = bis Dienstag).</li>
+            <li><strong style="color: var(--mark-green-border)">Grün (С / СО):</strong> Bedeutet "mit" oder "von". (с садом = mit Garten, со сливками = mit Sahne).</li>
+        </ul>
+        <hr style="border: 0; border-top: 1px solid #ccc; margin: 15px 0;">
+        <p><em>Vokabeln:</em><br>
+        врач (Arzt), сад (Garten), сливки (Sahne), школьный друг (Schulfreund), вход (Eingang).</p>
+    </div>
+</div>
+
+<script>
+    // Status
+    let currentTool = null; // 'blue', 'red', 'green'
+
+    // Tool Selection
+    function setTool(color) {
+        currentTool = color;
+        
+        // Update UI buttons
+        document.querySelectorAll('.tool-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.classList.contains(color)) {
+                btn.classList.add('active');
+            }
+        });
+    }
+
+    // Click handler for words
+    document.querySelectorAll('.interactive-word').forEach(word => {
+        word.addEventListener('click', function() {
+            if (!currentTool) {
+                alert("Пожалуйста, выберите цвет (карандаш) выше! \nBitte wähle zuerst oben einen Stift aus!");
+                return;
+            }
+
+            // Remove existing markings
+            this.classList.remove('marked-blue', 'marked-red', 'marked-green', 'error', 'missed');
+
+            // Apply new marking
+            this.classList.add(`marked-${currentTool}`);
+            
+            // Store user choice in dataset for checking logic
+            this.dataset.userChoice = currentTool;
+        });
+    });
+
+    // Check Logic
+    function checkAnswers() {
+        const words = document.querySelectorAll('.interactive-word');
+        let errors = 0;
+        let correctCount = 0;
+
+        words.forEach(word => {
+            const solution = word.dataset.solution;
+            const userChoice = word.dataset.userChoice;
+
+            // Reset visual error states first
+            word.classList.remove('error', 'missed');
+
+            if (userChoice) {
+                if (userChoice !== solution) {
+                    word.classList.add('error'); // Wrong color selected
+                    errors++;
+                } else {
+                    correctCount++;
+                }
+            } else {
+                // Not marked at all
+                word.classList.add('missed');
+            }
+        });
+
+        if (errors === 0 && correctCount === words.length) {
+            alert("Отлично! Всё правильно. \nPerfekt! Alles richtig markiert.");
+        }
+    }
+
+    // Reset Logic
+    function resetText() {
+        const words = document.querySelectorAll('.interactive-word');
+        words.forEach(word => {
+            word.className = 'interactive-word'; // Reset class list to base
+            delete word.dataset.userChoice;
+        });
+    }
+
+    // Solution Logic
+    function showSolution() {
+        const words = document.querySelectorAll('.interactive-word');
+        words.forEach(word => {
+            // Clean up first
+            word.className = 'interactive-word';
+            
+            // Apply correct class
+            const solution = word.dataset.solution;
+            word.classList.add(`marked-${solution}`);
+            word.dataset.userChoice = solution;
+        });
+    }
+
+    // Init: Select Blue by default
+    setTool('blue');
+
+</script>
+
+</body>
+</html>
